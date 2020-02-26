@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { withNavigationFocus } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Overlay } from 'react-native-elements';
 import { Camera } from 'expo-camera';
 
 
-function SnapScreen({ navigation }) {
+function SnapScreen(props) {
 
     const [hasPermission, setHasPermission] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -29,42 +30,49 @@ function SnapScreen({ navigation }) {
         }
     }
 
-    if (hasPermission) {
-        return (
-            <View style={{ flex: 1 }}>
-              <Camera key='camDiv' style={{ flex: 1, justifyContent: 'flex-end' }}
-            type={type}
-            flashMode={flash}
-            ref={ref => (camera = ref)}
-            >
-                <View style={SnapStyle.btnDiv}>
-                    <Button
-                    buttonStyle={SnapStyle.optionBtn}
-                    icon={<Ionicons name='ios-reverse-camera' size={40} color='white' />}
-                    onPress={() => { setType( type === Camera.Constants.Type.back ? Camera.Constants.Type.front : Camera.Constants.Type.back ); }}
-                    />
-                    <Button
-                    buttonStyle={SnapStyle.optionBtn}
-                    icon={<Ionicons name='ios-flash' size={40} color='white' />}
-                    onPress={() => { setFlash( flash === Camera.Constants.FlashMode.torch ? Camera.Constants.FlashMode.off : Camera.Constants.FlashMode.torch ); }}
-                    />
-                </View>
-
-                <Overlay isVisible={loading} fullScreen={true} overlayStyle={{justifyContent:'center', alignItems:'center', backgroundColor: 'transparent'}}>
-                    <View>
-                        <ActivityIndicator size={'large'} color={'white'} animating={loading}/>
-                        <Text style={{ marginTop: 10, color: 'white'}}>Loading...</Text>
+    if (props.isFocused) {
+        if (hasPermission) {
+            return (
+                <View style={{ flex: 1 }}>
+                  <Camera key='camDiv' style={{ flex: 1, justifyContent: 'flex-end' }}
+                type={type}
+                flashMode={flash}
+                ref={ref => (camera = ref)}
+                >
+                    <View style={SnapStyle.btnDiv}>
+                        <Button
+                        buttonStyle={SnapStyle.optionBtn}
+                        icon={<Ionicons name='ios-reverse-camera' size={40} color='white' />}
+                        onPress={() => { setType( type === Camera.Constants.Type.back ? Camera.Constants.Type.front : Camera.Constants.Type.back ); }}
+                        />
+                        <Button
+                        buttonStyle={SnapStyle.optionBtn}
+                        icon={<Ionicons name='ios-flash' size={40} color='white' />}
+                        onPress={() => { setFlash( flash === Camera.Constants.FlashMode.torch ? Camera.Constants.FlashMode.off : Camera.Constants.FlashMode.torch ); }}
+                        />
                     </View>
-                </Overlay>
-
-                <Button
-                buttonStyle={SnapStyle.optionBtn}
-                icon={<Ionicons name='md-add-circle' size={50} color='white' />}
-                onPress={() =>handleTakePic()}
-                 />
-            </Camera>
-            </View>
-        );
+    
+                    <Overlay isVisible={loading} fullScreen={true} overlayStyle={{justifyContent:'center', alignItems:'center', backgroundColor: 'transparent'}}>
+                        <View>
+                            <ActivityIndicator size={'large'} color={'white'} animating={loading}/>
+                            <Text style={{ marginTop: 10, color: 'white'}}>Loading...</Text>
+                        </View>
+                    </Overlay>
+    
+                    <Button
+                    buttonStyle={SnapStyle.optionBtn}
+                    icon={<Ionicons name='md-add-circle' size={50} color='white' />}
+                    onPress={() =>handleTakePic()}
+                     />
+                </Camera>
+                </View>
+            );
+        }else {
+            return (
+                <View style={{ flex: 1 }}>
+                </View>
+            );
+        }
     } else {
         return (
             <View style={{ flex: 1 }}>
@@ -73,7 +81,7 @@ function SnapScreen({ navigation }) {
     }
 }
 
-export default SnapScreen;
+export default withNavigationFocus(SnapScreen);
 
 var SnapStyle = StyleSheet.create({
     btnDiv: {
