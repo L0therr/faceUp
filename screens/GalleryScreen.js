@@ -1,30 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Card, Button, Icon } from 'react-native-elements'
+import {connect} from 'react-redux';
+import { View, Text, ScrollView } from 'react-native';
+import { Card } from 'react-native-elements'
 
 
-function GalleryScreen({ navigation }) {
+function GalleryScreen(props) {
+
+    const [picList, setPicList] = useState([]);
+
+    useEffect(() => {
+        var reqPics = props.getPicList;
+        setPicList(reqPics);
+    }, [props.getPicList]);
+
+    var picListDis = picList.map((pic, i) => {
+
+        return (
+                <Card key={i} image={{ uri: pic }}>
+                    <View style={{flex:1}}>
+                        <Text style={{marginBottom: 10}}>
+                            Your picture n° {i + 1} !!
+                        </Text>
+                    </View>
+                </Card>
+        );
+    });
+
     return (
         <ScrollView>
-            <Card
-                title='HELLO WORLD'
-                image={require('../assets/picture-3.jpg')}>
-                <Text style={{marginBottom: 10}}>
-                    The idea with React Native Elements is more about component structure than actual design.
-                </Text>
-                <Button
-                    icon={<Icon name='code' color='#ffffff' />}
-                    titleStyle={{marginLeft:10}}
-                    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                    title='VIEW NOW'
-                />
-            </Card>
+            {picListDis}
         </ScrollView>
     );
 }
 
-export default GalleryScreen;
+function mapStateToProps(state) {
+    return { getPicList: state.addReducer}
+}
 
-var HomeStyle = StyleSheet.create({
-});
+export default connect(
+    mapStateToProps, 
+    null
+  )(GalleryScreen);

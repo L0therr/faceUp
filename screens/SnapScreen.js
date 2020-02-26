@@ -4,6 +4,7 @@ import { withNavigationFocus } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Overlay } from 'react-native-elements';
 import { Camera } from 'expo-camera';
+import {connect} from 'react-redux';
 
 
 function SnapScreen(props) {
@@ -25,7 +26,25 @@ function SnapScreen(props) {
         setLoading(true)
         if (camera) {
             let photo = await camera.takePictureAsync();
-            console.log('photo :', photo);
+
+            //SEND TO BACK
+            var data = new FormData();
+
+            data.append('pic', {
+                uri: photo.uri,
+                type: 'image/jpeg',
+                name: 'user_pic.jpg',
+            });
+
+            //post method
+            var result = await fetch('http://10.2.3.38:3000/upload', {
+                method: 'POST',
+                body: data
+            });
+            var req = await result.json();
+
+            props.addToGallery(req.img.url);
+
             setLoading(false)
         }
     }
@@ -81,7 +100,21 @@ function SnapScreen(props) {
     }
 }
 
-export default withNavigationFocus(SnapScreen);
+function mapDispatchToProps(dispatch) {
+    return {
+      addToGallery: function(input) {
+          dispatch( {type: 'addPic', toAdd: input} )
+      }
+    }
+};
+
+var screen = withNavigationFocus(SnapScreen);
+
+export default connect(
+    null, 
+    mapDispatchToProps
+)(screen);
+
 
 var SnapStyle = StyleSheet.create({
     btnDiv: {

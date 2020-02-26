@@ -9,7 +9,17 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from './screens/HomeScreen';
 import SnapScreen from './screens/SnapScreen';
 import GalleryScreen from './screens/GalleryScreen';
-// console.disableYellowBox = true;
+console.disableYellowBox = true;
+
+//redux
+import {connect} from 'react-redux';
+import addReducer from './reducers/addPic';
+import {Provider} from 'react-redux';
+import {createStore, combineReducers}  from 'redux';
+
+const store = createStore(combineReducers({addReducer}));
+
+
 
 var BottomNavigator = createBottomTabNavigator(
   {
@@ -39,6 +49,7 @@ var BottomNavigator = createBottomTabNavigator(
   }
 );
 
+
 var StackNavigator = createStackNavigator({
   Home: {
     screen: HomeScreen,
@@ -52,7 +63,14 @@ var StackNavigator = createStackNavigator({
       headerShown: false
     })
   }
-}
-);
+});
 
-export default Navigation = createAppContainer(StackNavigator);
+var Navigation = createAppContainer(StackNavigator);
+
+export default function App () {
+  return (
+    <Provider store={store}>
+      <Navigation />
+    </Provider>
+  );
+}
